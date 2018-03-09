@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2002
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analysis", "MachineLearning\Analysis.csproj", "{E5E08321-3E0A-4206-B0A9-10794FD89C33}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{B3A65FD5-564B-4788-B0B2-77D3207C9352}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{D48DD564-0EF8-4BDD-8D21-379BFFA5E72C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineLearningApp", "MachineLearningApp\MachineLearningApp.csproj", "{4B2E77AA-54A6-4AFB-8472-2689EBB0BCE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{103563C0-CF05-40DE-A8CB-8DF833D3E120}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC04C01B-7AF7-468E-8E97-9047A5A3E9A4}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E5E08321-3E0A-4206-B0A9-10794FD89C33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5E08321-3E0A-4206-B0A9-10794FD89C33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5E08321-3E0A-4206-B0A9-10794FD89C33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5E08321-3E0A-4206-B0A9-10794FD89C33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3A65FD5-564B-4788-B0B2-77D3207C9352}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3A65FD5-564B-4788-B0B2-77D3207C9352}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3A65FD5-564B-4788-B0B2-77D3207C9352}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3A65FD5-564B-4788-B0B2-77D3207C9352}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D48DD564-0EF8-4BDD-8D21-379BFFA5E72C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D48DD564-0EF8-4BDD-8D21-379BFFA5E72C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D48DD564-0EF8-4BDD-8D21-379BFFA5E72C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D48DD564-0EF8-4BDD-8D21-379BFFA5E72C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B2E77AA-54A6-4AFB-8472-2689EBB0BCE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B2E77AA-54A6-4AFB-8472-2689EBB0BCE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B2E77AA-54A6-4AFB-8472-2689EBB0BCE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B2E77AA-54A6-4AFB-8472-2689EBB0BCE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{103563C0-CF05-40DE-A8CB-8DF833D3E120}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{103563C0-CF05-40DE-A8CB-8DF833D3E120}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{103563C0-CF05-40DE-A8CB-8DF833D3E120}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{103563C0-CF05-40DE-A8CB-8DF833D3E120}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {924AEF84-B4CC-4117-A868-D43B90378F00}
+	EndGlobalSection
+EndGlobal
