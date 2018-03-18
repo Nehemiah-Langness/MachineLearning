@@ -12,4 +12,11 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\MachineLearningApp\MachineLearningApp.csproj" />
+    <ProjectReference Include="..\MachineLearning\Analysis.csproj" />
+  </ItemGroup>
+
 </Project>
