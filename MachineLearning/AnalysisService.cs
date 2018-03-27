@@ -22,22 +22,23 @@ namespace Analysis
         {
             var scenario = instance.AsScenario();
 
-            var bestChoices = _tests.Select(test => new
+            var allChoices = _tests.Select(test => new
             {
                 outcomes = test.Outcomes,
                 matches = test.Conditions.Join(scenario.Get(), c => c.Key, s => s.Key,
                     (history, current) => history.Value == current.Value),
                 success = test.Result
             });
-            var next = bestChoices.Select(x => new
+
+            var bestChoices = allChoices.Select(x => new
             {
                 x.outcomes,
                 percentMatch = (int)Math.Round((x.matches.Count(m => m) / (double)x.matches.Count()) * 100),
                 x.success
             }).OrderByDescending(x => x.percentMatch);
 
-            var max = next.Max(be => be.percentMatch);
-            var bestChoice = next.Where(b => b.percentMatch == max).OrderByDescending(b => b.success.GetWieght()).FirstOrDefault();
+            var max = bestChoices.Max(be => be.percentMatch, 0);
+            var bestChoice = bestChoices.Where(b => b.percentMatch == max).OrderByDescending(b => b.success.GetWieght()).FirstOrDefault();
 
             var outcome =
                 (bestChoice == null || bestChoice.success == ResultStatus.Failure)
