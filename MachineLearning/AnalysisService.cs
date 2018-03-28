@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using Analysis.Services;
 using Domain.Contracts;
@@ -30,21 +29,25 @@ namespace Analysis
                 success = test.Result
             });
 
+            //Log.Write(string.Join("\n", allChoices.Select(ac => $"{ac.success} : {ac.matches.Count(m => m)} : {string.Join("-", ac.outcomes.Select(o => $"{o.Key}:{o.Value}"))}")));
+
             var bestChoices = allChoices.Select(x => new
             {
                 x.outcomes,
-                percentMatch = (int)Math.Round((x.matches.Count(m => m) / (double)x.matches.Count()) * 100),
+                percentMatch = (int)Math.Round((double)x.matches.Count(m => m) * 100 / x.matches.Count()),
                 x.success
             }).OrderByDescending(x => x.percentMatch);
 
-            var max = bestChoices.Max(be => be.percentMatch, 0);
-            var bestChoice = bestChoices.Where(b => b.percentMatch == max).OrderByDescending(b => b.success.GetWieght()).FirstOrDefault();
+            Log.Write(string.Join("\n", bestChoices.Select(ac => $"{ac.success} : {ac.percentMatch} : {string.Join("-", ac.outcomes.Select(o => $"{o.Key}:{o.Value}"))}")));
 
-            var outcome =
-                (bestChoice == null || bestChoice.success == ResultStatus.Failure)
+
+            var maxPercentMatch = bestChoices.Max(be => be.percentMatch, 0);
+            var bestChoice = bestChoices.Where(b => b.percentMatch == maxPercentMatch)
+                .OrderByDescending(b => b.success.GetWieght()).FirstOrDefault();
+
+            var outcome = (bestChoice == null || bestChoice.success == ResultStatus.Failure || bestChoice.percentMatch < 75)
                     ? (TResult)new TResult().Heuristic(instance)
                     : Result.Set(new TResult(), bestChoice.outcomes);
-
 
             var result = success(instance, outcome);
             _tests.Add(new Test<TScenario, TResult>(instance, outcome, result));
