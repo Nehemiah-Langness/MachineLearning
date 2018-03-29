@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Analysis;
 using Analysis.Attributes;
 using Analysis.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -29,18 +28,11 @@ namespace UnitTests
             public string Condition4 { get => Backing4.ToString(); set => Backing4 = Convert.ToBoolean(value); }
         }
 
-        private Scenario<TestScenario> NewScenario => new TestScenario
-        {
-            Condition1 = "Test",
-            Backing2 = 5,
-            Backing3 = DateTime.Now,
-            Backing4 = true
-        }.AsScenario();
 
         [TestMethod]
         public void TestScenarioSerialization()
         {
-            var serializedResults = NewScenario.Get();
+            var serializedResults = new TestScenario().GetScenario();
 
             Assert.IsTrue(serializedResults.All(pair => pair.Key.Contains("Condition")));
             Assert.IsTrue(serializedResults.All(pair => !pair.Key.Contains("Backing")));
@@ -50,16 +42,16 @@ namespace UnitTests
         [TestMethod]
         public void TestScenarioDeSerialization()
         {
-            var scenario = NewScenario;
-            var serializedResults = scenario.Get();
+            var scenario = new TestScenario();
+            var serializedResults = scenario.GetScenario();
 
             var reversed = new TestScenario();
-            Scenario.Set(reversed, serializedResults);
+            reversed.SetScenario(serializedResults);
 
-            Assert.AreEqual(scenario.Core.Condition1, reversed.Condition1);
-            Assert.AreEqual(scenario.Core.Condition2, reversed.Condition2);
-            Assert.AreEqual(scenario.Core.Condition3, reversed.Condition3);
-            Assert.AreEqual(scenario.Core.Condition4, reversed.Condition4);
+            Assert.AreEqual(scenario.Condition1, reversed.Condition1);
+            Assert.AreEqual(scenario.Condition2, reversed.Condition2);
+            Assert.AreEqual(scenario.Condition3, reversed.Condition3);
+            Assert.AreEqual(scenario.Condition4, reversed.Condition4);
         }
     }
 }

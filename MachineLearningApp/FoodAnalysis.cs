@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Analysis;
 using Domain.Contracts;
 
 namespace MachineLearningApp
@@ -12,50 +11,9 @@ namespace MachineLearningApp
 
         public IEnumerable<IRule> GetHistory()
         {
-            return new List<Test>
+            return new List<IRule>
             {
-                //new Test<Person,Meal>(
-                //    new Person
-                //    {
-                //        IsHungry = true,
-                //        HungryFor = FoodType.Chinese
-                //    },
-                //    new Meal
-                //    {
-                //        WillEat = true,
-                //        RestrauntType = FoodType.Chinese
-                //    }, ResultStatus.Success),
-                //new Test<Person,Meal>(
-                //    new Person
-                //    {
-                //        IsHungry = false,
-                //    },
-                //    new Meal
-                //    {
-                //        WillEat = false,
-                //    }, ResultStatus.Success),
-                //new Test<Person,Meal>(
-                //    new Person
-                //    {
-                //        IsHungry = true,
-                //        HungryFor = FoodType.Chinese
-                //    },
-                //    new Meal
-                //    {
-                //        WillEat = true,
-                //        RestrauntType = FoodType.Mexican
-                //    }, ResultStatus.Failure),
-                //new Test<Person,Meal>(
-                //    new Person
-                //    {
-                //        IsHungry = true,
-                //        HungryFor = FoodType.Pizza
-                //    },
-                //    new Meal
-                //    {
-                //        WillEat = true,
-                //        RestrauntType = FoodType.Pizza
-                //    }, ResultStatus.Success),
+                
             };
         }  
 

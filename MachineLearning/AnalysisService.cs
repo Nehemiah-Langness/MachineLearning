@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Analysis.Services;
-using Domain;
 using Domain.Contracts;
 
 namespace Analysis
@@ -26,7 +25,7 @@ namespace Analysis
 
         public IAnalyticResult<TScenario, TResult> RunSingle(TScenario scenario)
         {
-            var bestChoice = GetBestChoice(scenario.AsScenario());
+            var bestChoice = GetBestChoice(scenario.GetScenario());
             var method = bestChoice == null ? DerivationMethod.Heuristic : DerivationMethod.Historical;
 
             var outcome = method == DerivationMethod.Historical
@@ -40,14 +39,14 @@ namespace Analysis
             return new AnalysisResult<TScenario, TResult>(scenario, outcome, method, result);
         }
 
-        private AnalysisChoice GetBestChoice(Serializable<TScenario> scenario)
+        private AnalysisChoice GetBestChoice(IEnumerable<IKeyValue> scenario)
         {
             var choices = _history.Select(test => new AnalysisChoice
             {
                 MatchRate = test.Conditions
-                    .Join(scenario.Get(), c => c.Key, s => s.Key, (history, current) => history.Value == current.Value)
+                    .Join(scenario, c => c.Key, s => s.Key, (history, current) => history.Value == current.Value)
                     .Percent(m => m),
-                SuccessRate = test.Score * 100 / (test.Attempts * ResultStatus.Success.GetWieght()),
+                SuccessRate = test.SuccessRate,
                 Rule = test
             }).ToList();
 
@@ -62,7 +61,7 @@ namespace Analysis
             if (bestChoice != null && bestChoice.MatchRate == 100)
                 bestChoice.Rule.AddResult(result);
             else
-                _history.Add(new Test<TScenario, TResult>(scenario, outcome, result).AddResult(result));
+                _history.Add(new AnalysisTest<TScenario, TResult>(scenario, outcome).AddResult(result));
         }
     }
 }

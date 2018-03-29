@@ -5,7 +5,7 @@ using Domain.Contracts;
 
 namespace Analysis.Services
 {
-    public abstract class Serializable<T> : Serializable
+    internal abstract class Serializable<T> : Serializable
         where T : class
     {
         public readonly T Core;
@@ -15,13 +15,15 @@ namespace Analysis.Services
             Core = core;
         }
 
-        public abstract T Set(IEnumerable<IKeyValue> values);
-        public abstract IEnumerable<IKeyValue> Get();
+        public abstract IEnumerable<PropertyInfo> Properties { get; }
+
+        public T Set(IEnumerable<IKeyValue> values) => SetValues(Core, Properties, values);
+        public IEnumerable<IKeyValue> Get() => GetValues(Core, Properties);
     }
 
-    public abstract class Serializable
+    internal abstract class Serializable
     {
-        protected static T SetValues<T>(T @object, IEnumerable<PropertyInfo> properties, IEnumerable<IKeyValue> values)
+        public static T SetValues<T>(T @object, IEnumerable<PropertyInfo> properties, IEnumerable<IKeyValue> values)
         {
             var propertiesToSet = properties.Join(values, property => property.Name, value => value.Key, (property, value) => new
             {
@@ -35,7 +37,7 @@ namespace Analysis.Services
             return @object;
         }
 
-        protected static IEnumerable<IKeyValue> GetValues<T>(T @object, IEnumerable<PropertyInfo> properties)
+        public static IEnumerable<IKeyValue> GetValues<T>(T @object, IEnumerable<PropertyInfo> properties)
         {
             return properties
                 .Select(property => new KeyValuePair(property.Name, property.GetValue(@object)?.ToString()))

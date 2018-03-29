@@ -5,37 +5,33 @@ using Domain.Contracts;
 
 namespace Analysis
 {
-    public class Test : IRule
+    internal class AnalysisTest : IRule
     {
-        public Test(ResultStatus result)
-        {
-            Result = result;
-        }
-
-        public int Score { get; set; }
-        public int Attempts { get; set; }
-        public ResultStatus Result { get; }
+        private int Score { get; set; }
+        private int MaxScore { get; set; }
         public IEnumerable<IKeyValue> Conditions { get; protected set; }
         public IEnumerable<IKeyValue> Outcomes { get; protected set; }
 
+        public int SuccessRate => Score * 100 / MaxScore;
+
         public void AddResult(ResultStatus status)
         {
-            Attempts++;
             Score += status.GetWieght();
+            MaxScore += ResultStatus.Success.GetWieght();
         }
     }
 
-    public class Test<TScenario, TResult> : Test 
+    internal class AnalysisTest<TScenario, TResult> : AnalysisTest 
         where TScenario : class 
         where TResult : class
     {
-        public Test(TScenario scenario, TResult outcome, ResultStatus result) : base(result)
+        public AnalysisTest(TScenario scenario, TResult outcome)
         {
             Conditions = scenario.AsScenario().Get();
             Outcomes = outcome.AsOutcome().Get();
         }
 
-        public new Test<TScenario, TResult> AddResult(ResultStatus status)
+        public new AnalysisTest<TScenario, TResult> AddResult(ResultStatus status)
         {
             base.AddResult(status);
             return this;
