@@ -12,7 +12,7 @@ namespace Analysis
         public IEnumerable<IKeyValue> Conditions { get; protected set; }
         public IEnumerable<IKeyValue> Outcomes { get; protected set; }
 
-        public int SuccessRate => Score * 100 / MaxScore;
+        public int SuccessRate => MaxScore == 0 ? 0 : Score * 100 / MaxScore;
 
         public void AddResult(ResultStatus status)
         {
@@ -21,8 +21,8 @@ namespace Analysis
         }
     }
 
-    internal class AnalysisTest<TScenario, TResult> : AnalysisTest 
-        where TScenario : class 
+    internal class AnalysisTest<TScenario, TResult> : AnalysisTest
+        where TScenario : class
         where TResult : class
     {
         public AnalysisTest(TScenario scenario, TResult outcome)

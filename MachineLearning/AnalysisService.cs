@@ -29,7 +29,7 @@ namespace Analysis
             var method = bestChoice == null ? DerivationMethod.Heuristic : DerivationMethod.Historical;
 
             var outcome = method == DerivationMethod.Historical
-                    ? Result.Set(new TResult(), bestChoice.Rule.Outcomes)
+                    ? new TResult().AsOutcome().Set(bestChoice.Rule.Outcomes)
                     : (TResult)new TResult().Heuristic(scenario);
 
             var result = _system.IsSuccess(scenario, outcome);

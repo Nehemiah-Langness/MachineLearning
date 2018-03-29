@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Analysis;
-using Domain.Contracts;
+using MachineLearningApp.Services;
 
 namespace MachineLearningApp
 {
@@ -30,8 +31,8 @@ namespace MachineLearningApp
                 //    default:
                 //        throw new ArgumentOutOfRangeException();
                 //}
-                Console.WriteLine(result);
-                Console.WriteLine();
+                Log.Write(result);
+                Log.Write(string.Join(string.Empty, Enumerable.Repeat("-", 10)));
             }
 
             Console.WriteLine("Analysis Complete");

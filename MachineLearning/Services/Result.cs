@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Domain.Contracts;
 
 namespace Analysis.Services
 {
@@ -11,12 +10,12 @@ namespace Analysis.Services
     {
         public Result(T core) : base(core) { }
 
-        public override IEnumerable<PropertyInfo> Properties => Outcomes;
+        public override IEnumerable<PropertyInfo> Properties => _properties ?? (_properties = GetOutcomes());
 
-        public static IEnumerable<PropertyInfo> Outcomes { get; } = GetOutcomes();
-        private static IEnumerable<PropertyInfo> GetOutcomes()
+        private IEnumerable<PropertyInfo> _properties;
+        private IEnumerable<PropertyInfo> GetOutcomes()
         {
-            return TypeInfo<T>.Properties
+            return TypeInfo.Get(Core.GetType())
                 .Where(property => 
                     Attribute.IsDefined(property, TypeInfo.OutcomeAttribute)
                     && property.CanRead
@@ -27,8 +26,6 @@ namespace Analysis.Services
 
     internal static class Result
     {
-        public static T Set<T>(T @object, IEnumerable<IKeyValue> values) where T : class => Serializable.SetValues(@object, Result<T>.Outcomes, values);
-
         public static Result<T> AsOutcome<T>(this T @object) where T : class => new Result<T>(@object);
     }
 }

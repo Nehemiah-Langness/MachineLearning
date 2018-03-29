@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Domain.Contracts;
 
 namespace Analysis.Services
 {
@@ -10,12 +9,12 @@ namespace Analysis.Services
         where T : class
     {
         public Scenario(T core) : base(core) { }
-        public override IEnumerable<PropertyInfo> Properties => Conditions;
+        public override IEnumerable<PropertyInfo> Properties => _conditions ?? (_conditions = GetConditions());
 
-        public static IEnumerable<PropertyInfo> Conditions { get; } = GetConditions();
-        private static IEnumerable<PropertyInfo> GetConditions()
+        private IEnumerable<PropertyInfo> _conditions;
+        private IEnumerable<PropertyInfo> GetConditions()
         {
-            return TypeInfo<T>.Properties
+            return TypeInfo.Get(Core.GetType())
                 .Where(property => 
                     Attribute.IsDefined(property, TypeInfo.ConditionAttribute)
                     && property.CanRead
@@ -26,8 +25,6 @@ namespace Analysis.Services
 
     internal static class Scenario
     {
-        public static T Set<T>(T @object, IEnumerable<IKeyValue> values) where T : class => Serializable.SetValues(@object, Scenario<T>.Conditions, values);
-
         public static Scenario<T> AsScenario<T> (this T @object) where T : class => new Scenario<T>(@object);
     }
 }

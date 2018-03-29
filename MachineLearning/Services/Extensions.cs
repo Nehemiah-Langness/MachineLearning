@@ -10,7 +10,8 @@ namespace Analysis.Services
         public static int Percent<T>(this IEnumerable<T> items, Func<T, bool> function)
         {
             var itemList = items.ToList();
-            return itemList.Count(function) * 100 / itemList.Count;
+
+            return itemList.Count == 0 ? 0 : itemList.Count(function) * 100 / itemList.Count;
         }
 
         public static IEnumerable<IKeyValue> GetScenario(this object scenario)
