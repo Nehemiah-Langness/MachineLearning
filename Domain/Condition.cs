@@ -1,4 +1,6 @@
-﻿using Domain.Base;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Domain.Base;
 using Domain.Contracts;
 
 namespace Domain
@@ -14,3 +16,4 @@ namespace Domain
         string IKeyValue.Key => Property;
     }
 }
+

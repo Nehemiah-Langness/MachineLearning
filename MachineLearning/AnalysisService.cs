@@ -2,57 +2,61 @@
 using System.Collections.Generic;
 using System.Linq;
 using Analysis.Services;
+using Domain;
 using Domain.Contracts;
 
 namespace Analysis
 {
     public class AnalysisService
     {
-        private readonly ICollection<Test> _tests;
+        private readonly ICollection<IRule> _history;
 
-        public AnalysisService(IEnumerable<Test> tests)
+        public AnalysisService(IEnumerable<IRule> tests)
         {
-            _tests = tests.ToList();
+            _history = tests.ToList();
         }
 
-        public AnalysisResult<TResult> Run<TScenario, TResult>(TScenario instance, Func<TScenario, TResult, ResultStatus> success)
+        public AnalysisResult<TResult> Run<TScenario, TResult>(TScenario scenario, Func<TScenario, TResult, ResultStatus> success)
             where TResult : class, IResult<TScenario>, new()
             where TScenario : class
         {
-            var scenario = instance.AsScenario();
+            var bestChoice = GetBestChoice(scenario.AsScenario());
+            var outcome = bestChoice != null
+                    ? Result.Set(new TResult(), bestChoice.Rule.Outcomes)
+                    : (TResult)new TResult().Heuristic(scenario);
 
-            var allChoices = _tests.Select(test => new
-            {
-                outcomes = test.Outcomes,
-                matches = test.Conditions.Join(scenario.Get(), c => c.Key, s => s.Key,
-                    (history, current) => history.Value == current.Value),
-                success = test.Result
-            });
+            var result = success(scenario, outcome);
 
-            //Log.Write(string.Join("\n", allChoices.Select(ac => $"{ac.success} : {ac.matches.Count(m => m)} : {string.Join("-", ac.outcomes.Select(o => $"{o.Key}:{o.Value}"))}")));
-
-            var bestChoices = allChoices.Select(x => new
-            {
-                x.outcomes,
-                percentMatch = (int)Math.Round((double)x.matches.Count(m => m) * 100 / x.matches.Count()),
-                x.success
-            }).OrderByDescending(x => x.percentMatch);
-
-            Log.Write(string.Join("\n", bestChoices.Select(ac => $"{ac.success} : {ac.percentMatch} : {string.Join("-", ac.outcomes.Select(o => $"{o.Key}:{o.Value}"))}")));
-
-
-            var maxPercentMatch = bestChoices.Max(be => be.percentMatch, 0);
-            var bestChoice = bestChoices.Where(b => b.percentMatch == maxPercentMatch)
-                .OrderByDescending(b => b.success.GetWieght()).FirstOrDefault();
-
-            var outcome = (bestChoice == null || bestChoice.success == ResultStatus.Failure || bestChoice.percentMatch < 75)
-                    ? (TResult)new TResult().Heuristic(instance)
-                    : Result.Set(new TResult(), bestChoice.outcomes);
-
-            var result = success(instance, outcome);
-            _tests.Add(new Test<TScenario, TResult>(instance, outcome, result));
+            SaveTest(scenario, bestChoice, result, outcome);
 
             return new AnalysisResult<TResult>(outcome, result);
+        }
+
+        private AnalysisChoice GetBestChoice<TScenario>(Serializable<TScenario> scenario) where TScenario : class
+        {
+            var choices = _history.Select(test => new AnalysisChoice
+            {
+                MatchRate = test.Conditions
+                    .Join(scenario.Get(), c => c.Key, s => s.Key, (history, current) => history.Value == current.Value)
+                    .Percent(m => m),
+                SuccessRate = test.Score * 100 / (test.Attempts * ResultStatus.Success.GetWieght()),
+                Rule = test
+            }).ToList();
+
+            return choices
+                .OrderByDescending(b => b.MatchRate)
+                .ThenByDescending(b => b.SuccessRate)
+                .FirstOrDefault(b => b.IsGoodChoice());
+        }
+
+        private void SaveTest<TScenario, TResult>(TScenario scenario, AnalysisChoice bestChoice, ResultStatus result, TResult outcome)
+            where TResult : class, IResult<TScenario>, new()
+            where TScenario : class
+        {
+            if (bestChoice != null && bestChoice.MatchRate == 100)
+                bestChoice.Rule.AddResult(result);
+            else
+                _history.Add(new Test<TScenario, TResult>(scenario, outcome, result).AddResult(result));
         }
     }
 }

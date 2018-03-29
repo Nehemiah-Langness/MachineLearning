@@ -4,8 +4,11 @@ namespace Domain.Contracts
 {
     public interface IRule
     {
-        ResultStatus Result { get; }
+        int Score { get; }
+        int Attempts { get; }
         IEnumerable<IKeyValue> Conditions { get; }
         IEnumerable<IKeyValue> Outcomes { get; }
+
+        void AddResult(ResultStatus status);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Domain.Contracts;
 
 namespace Analysis.Services
 {
@@ -19,18 +18,10 @@ namespace Analysis.Services
             return list.Max(function);
         }
 
-        public static int GetWieght(this ResultStatus status)
+        public static int Percent<T>(this IEnumerable<T> items, Func<T, bool> function)
         {
-            switch (status) {
-                case ResultStatus.Success:
-                    return 2;
-                case ResultStatus.Inconclusive:
-                    return 1;
-                case ResultStatus.Failure:
-                    return 0;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(status), status, null);
-            }
+            var itemList = items.ToList();
+            return itemList.Count(function) * 100 / itemList.Count;
         }
     }
 }
