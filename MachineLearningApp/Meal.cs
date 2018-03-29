@@ -1,6 +1,5 @@
 ﻿using System;
 using Analysis.Attributes;
-using Analysis.Services;
 using Domain.Contracts;
 
 namespace MachineLearningApp
@@ -26,12 +25,10 @@ namespace MachineLearningApp
 
         public IResult<Person> Heuristic(Person scenario)
         {
-            Log.Write("Choosing by heuristic");
-
             if (scenario.IsHungry)
                 WillEat = true;
 
-            RestrauntType = Program.Random.Next(0, 100) < 30 ? null : (FoodType?)Program.Random.Next(0, 4);
+            RestrauntType = RandomService.Get(0, 100) < 30 ? null : (FoodType?)RandomService.Get(0, 4);
 
             return this;
         }

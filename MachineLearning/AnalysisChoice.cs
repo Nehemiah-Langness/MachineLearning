@@ -1,9 +1,8 @@
-﻿using Analysis.Services;
-using Domain.Contracts;
+﻿using Domain.Contracts;
 
 namespace Analysis
 {
-    public class AnalysisChoice
+    internal class AnalysisChoice
     {
         public int MatchRate { get; set; }
         public int SuccessRate { get; set; }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Analysis.Services;
 using Domain;
@@ -7,32 +6,41 @@ using Domain.Contracts;
 
 namespace Analysis
 {
-    public class AnalysisService
+    public class AnalysisService<TScenario, TResult>
+        where TResult : class, IResult<TScenario>, new()
+        where TScenario : class
     {
+        private readonly IAnalyticSystem<TScenario, TResult> _system;
         private readonly ICollection<IRule> _history;
 
-        public AnalysisService(IEnumerable<IRule> tests)
+        public AnalysisService(IAnalyticSystem<TScenario, TResult> system)
         {
-            _history = tests.ToList();
+            _system = system;
+            _history = _system.GetHistory().ToList();
         }
 
-        public AnalysisResult<TResult> Run<TScenario, TResult>(TScenario scenario, Func<TScenario, TResult, ResultStatus> success)
-            where TResult : class, IResult<TScenario>, new()
-            where TScenario : class
+        public IEnumerable<IAnalyticResult<TScenario, TResult>> Run()
+        {
+            return _system.GetTests().Select(RunSingle);
+        }
+
+        public IAnalyticResult<TScenario, TResult> RunSingle(TScenario scenario)
         {
             var bestChoice = GetBestChoice(scenario.AsScenario());
-            var outcome = bestChoice != null
+            var method = bestChoice == null ? DerivationMethod.Heuristic : DerivationMethod.Historical;
+
+            var outcome = method == DerivationMethod.Historical
                     ? Result.Set(new TResult(), bestChoice.Rule.Outcomes)
                     : (TResult)new TResult().Heuristic(scenario);
 
-            var result = success(scenario, outcome);
+            var result = _system.IsSuccess(scenario, outcome);
 
             SaveTest(scenario, bestChoice, result, outcome);
 
-            return new AnalysisResult<TResult>(outcome, result);
+            return new AnalysisResult<TScenario, TResult>(scenario, outcome, method, result);
         }
 
-        private AnalysisChoice GetBestChoice<TScenario>(Serializable<TScenario> scenario) where TScenario : class
+        private AnalysisChoice GetBestChoice(Serializable<TScenario> scenario)
         {
             var choices = _history.Select(test => new AnalysisChoice
             {
@@ -49,9 +57,7 @@ namespace Analysis
                 .FirstOrDefault(b => b.IsGoodChoice());
         }
 
-        private void SaveTest<TScenario, TResult>(TScenario scenario, AnalysisChoice bestChoice, ResultStatus result, TResult outcome)
-            where TResult : class, IResult<TScenario>, new()
-            where TScenario : class
+        private void SaveTest(TScenario scenario, AnalysisChoice bestChoice, ResultStatus result, TResult outcome)
         {
             if (bestChoice != null && bestChoice.MatchRate == 100)
                 bestChoice.Rule.AddResult(result);
